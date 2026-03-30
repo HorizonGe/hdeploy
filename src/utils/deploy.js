@@ -8,7 +8,6 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import scpClient from 'scp2';
 import figlet from 'figlet';
-import { sayingArr } from './saying.js';
 import open from 'open';
 import inquirer from 'inquirer';
 
