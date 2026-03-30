@@ -6,7 +6,6 @@ import childProcess from 'child_process';
 import archiver from 'archiver';
 import fs from 'fs';
 import fetch from 'node-fetch';
-import scpClient from 'scp2';
 import figlet from 'figlet';
 import open from 'open';
 import inquirer from 'inquirer';
@@ -315,29 +314,48 @@ export function createRemoteFolder(conn, config) {
 // 上传服务器
 export function uploadServer(conn, config) {
   return new Promise((resolve, reject) => {
-    log('上传服务器中...');
-    const {
-      webDir, distPath, host, port, username, password,
-    } = config;
-    scpClient.scp(
-      `${distPath}.tar.gz`,
-      {
-        host,
-        port,
-        username,
-        password,
-        path: webDir,
-      },
-      (err) => {
-        if (err) {
-          error('上传失败');
-          reject(err);
-        } else {
-          succeed('上传成功');
-          resolve();
-        }
-      },
-    );
+    const { webDir, distPath } = config;
+    const localFile = `${distPath}.tar.gz`;
+    const remoteFile = `${webDir}/${getFileName(distPath)}.tar.gz`;
+
+    log(`上传文件：${localFile} → ${remoteFile}`);
+    const spinner = ora('正在上传中...').start();
+
+    conn.sftp((err, sftp) => {
+      if (err) {
+        spinner.stop();
+        error(`SFTP 会话建立失败：${err.message}`);
+        return reject(err);
+      }
+
+      const localSize = fs.statSync(localFile).size;
+      let transferred = 0;
+
+      const readStream = fs.createReadStream(localFile);
+      const writeStream = sftp.createWriteStream(remoteFile);
+
+      readStream.on('data', (chunk) => {
+        transferred += chunk.length;
+        const percent = ((transferred / localSize) * 100).toFixed(1);
+        spinner.text = `正在上传中... ${percent}%`;
+      });
+
+      writeStream.on('close', () => {
+        spinner.stop();
+        succeed('上传成功');
+        sftp.end();
+        resolve();
+      });
+
+      writeStream.on('error', (writeErr) => {
+        spinner.stop();
+        error(`上传失败：${writeErr.message}`);
+        sftp.end();
+        reject(writeErr);
+      });
+
+      readStream.pipe(writeStream);
+    });
   });
 }
 
