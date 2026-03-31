@@ -149,7 +149,7 @@ function handleSetConfig(env) {
       type: 'input',
       name: `${env}PreviewUrl`,
       message: '预览地址',
-      when: (answers) => answers.deployEnvList.includes(env) && answers[`${env}PreviewUrl`] === true,
+      when: (answers) => answers.deployEnvList.includes(env) && answers[`${env}IsOpenPreview`] === true,
     },
   ];
 }
