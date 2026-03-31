@@ -3,19 +3,31 @@ import path from 'path';
 import { getDeployConfigFileName, packageJson, packageInfo } from '../utils/index.js';
 
 function handleSetConfig(env) {
+  const envNameMap = {
+    dev: '开发环境',
+    test: '测试环境',
+    prod: '生产环境'
+  };
+  
+  const buildScriptMap = {
+    dev: 'npm run build:dev',
+    test: 'npm run build:test',
+    prod: 'npm run build:prod'
+  };
+  
   return [
     {
       type: 'input',
       name: `${env}Name`,
       message: '环境名称',
-      default: '开发环境',
+      default: envNameMap[env],
       when: (answers) => answers.deployEnvList.includes(env),
     },
     {
       type: 'input',
       name: `${env}Script`,
       message: '打包命令',
-      default: 'npm run build:dev',
+      default: buildScriptMap[env],
       when: (answers) => answers.deployEnvList.includes(env),
     },
     {
