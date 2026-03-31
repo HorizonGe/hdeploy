@@ -237,7 +237,7 @@ export function backup(conn, config) {
       rm -rf ${bakDir}/$oldestBackup
     fi
     mkdir -p ${bakDir}/${currentTime}
-    cp -r ${webDir} ${bakDir}/${currentTime}/\n`;
+    cp -r ${webDir}/. ${bakDir}/${currentTime}/\n`;
     log('执行备份命令');
     conn.exec(cmd, (err, stream) => {
       if (err) {
