@@ -230,26 +230,14 @@ function formatTime(date) {
 export function backup(conn, config) {
   return new Promise((resolve, reject) => {
     const { bakDir, maxBakNum, webDir } = config;
-    const pathArr = webDir.split('/');
-    const rootFolder = pathArr.pop();
-    const rootPath = pathArr.join('/');
     const currentDate = new Date();
     const currentTime = formatTime(currentDate);
-    // const cmd = `
-    // mkdir -p ${bakDir}/${currentTime}\n
-    // if [ $(ls -l ${bakDir} | grep -c ^d) -ge ${maxBakNum} ]; then
-    //   oldestBackup=$(ls -lt ${bakDir} | grep ^d | awk '{print $NF}' | tail -n 1)
-    //   rm -rf ${bakDir}/$oldestBackup
-    // fi
-    // cp -r ${webDir} ${bakDir}/${currentTime}/\n
-    // rm -rf ${webDir}`;
-    const cmd = `cd ${rootPath}\n
-    mkdir -p _backUp/${rootFolder}_${currentTime}\n 
-    if [ $(ls -l _backUp | grep -c ^d) -ge ${maxBakNum} ]; then
-      oldestBackup=$(ls -lt _backUp | grep ^d | awk '{print $NF}' | tail -n 1)
-      rm -rf _backUp/$oldestBackup
+    const cmd = `mkdir -p ${bakDir}/${currentTime}\n
+    if [ $(ls -l ${bakDir} | grep -c ^d) -ge ${maxBakNum} ]; then
+      oldestBackup=$(ls -lt ${bakDir} | grep ^d | awk '{print $NF}' | tail -n 1)
+      rm -rf ${bakDir}/$oldestBackup
     fi
-    cp -r ${webDir} ${rootPath}/_backUp/${rootFolder}_${currentTime}/\n`;
+    cp -r ${webDir} ${bakDir}/${currentTime}/\n`;
     log('执行备份命令');
     conn.exec(cmd, (err, stream) => {
       if (err) {

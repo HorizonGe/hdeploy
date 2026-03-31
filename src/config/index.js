@@ -104,6 +104,13 @@ function handleSetConfig(env) {
       ],
       when: (answers) => answers.deployEnvList.includes(env) && answers[`${env}IsBak`] === true,
     },
+    // 备份目录
+    {
+      type: 'input',
+      name: `${env}BakDir`,
+      message: '备份目录',
+      when: (answers) => answers.deployEnvList.includes(env) && answers[`${env}IsBak`] === true,
+    },
     {
       type: 'confirm',
       name: `${env}isDeleteRemoteFile`,
