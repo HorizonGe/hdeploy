@@ -5,7 +5,7 @@ import {
 } from '../utils/index.js';
 import { deployConfigPath } from '../config/index.js';
 import { pathToFileURL } from 'url';
-import { connectSSH, disconnectSSH, checkPassword } from '../utils/deploy.js';
+import { connectSSH, disconnectSSH, checkPassword, openPreview } from '../utils/deploy.js';
 
 const conn = new Client();
 
@@ -135,6 +135,11 @@ export default {
     disconnectSSH(conn);
 
     succeed(`恭喜您，${config.projectName} 项目已成功回滚至版本 ${version}`);
+
+    if (envConfig.isOpenPreview && envConfig.previewUrl) {
+      await openPreview(envConfig.previewUrl);
+    }
+
     process.exit(0);
   },
 };
