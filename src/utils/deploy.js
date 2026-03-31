@@ -232,11 +232,11 @@ export function backup(conn, config) {
     const { bakDir, maxBakNum, webDir } = config;
     const currentDate = new Date();
     const currentTime = formatTime(currentDate);
-    const cmd = `mkdir -p ${bakDir}/${currentTime}\n
-    if [ $(ls -l ${bakDir} | grep -c ^d) -ge ${maxBakNum} ]; then
+    const cmd = `if [ $(ls -l ${bakDir} | grep -c ^d) -ge ${maxBakNum} ]; then
       oldestBackup=$(ls -lt ${bakDir} | grep ^d | awk '{print $NF}' | tail -n 1)
       rm -rf ${bakDir}/$oldestBackup
     fi
+    mkdir -p ${bakDir}/${currentTime}
     cp -r ${webDir} ${bakDir}/${currentTime}/\n`;
     log('执行备份命令');
     conn.exec(cmd, (err, stream) => {
