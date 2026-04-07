@@ -51,10 +51,16 @@ function handleSetConfig(env) {
       when: (answers) => answers.deployEnvList.includes(env),
     },
     {
+      type: 'input',
+      name: `${env}PrivateKeyPath`,
+      message: 'SSH 密钥文件路径（留空则使用密码连接）',
+      when: (answers) => answers.deployEnvList.includes(env),
+    },
+    {
       type: 'password',
       name: `${env}Password`,
       message: '密码',
-      when: (answers) => answers.deployEnvList.includes(env),
+      when: (answers) => answers.deployEnvList.includes(env) && !answers[`${env}PrivateKeyPath`],
     },
     {
       type: 'input',

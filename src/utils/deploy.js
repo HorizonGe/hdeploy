@@ -41,7 +41,12 @@ export const checkEnvCorrect = (config, env) => {
 
 export function checkPassword(config) {
   return new Promise((resolve, reject) => {
-    const { password } = config;
+    const { password, privateKeyPath } = config;
+    // 使用密钥认证时跳过密码检查
+    if (privateKeyPath) {
+      resolve();
+      return;
+    }
     if (password) {
       resolve();
     } else {
@@ -168,19 +173,27 @@ export function compress(distPath) {
 export function connectSSH(conn, config) {
   return new Promise((resolve, reject) => {
     const {
-      host, port, username, password,
+      host, port, username, password, privateKeyPath,
     } = config;
     log(`(SSH 连接 ${host})`);
+
+    const connectOptions = { host, port, username };
+    if (privateKeyPath) {
+      try {
+        connectOptions.privateKey = fs.readFileSync(privateKeyPath);
+      } catch (e) {
+        error(`读取密钥文件失败：${e.message}`);
+        reject(e);
+        return;
+      }
+    } else {
+      connectOptions.password = password;
+    }
 
     conn.on('ready', () => {
       succeed('SSH 连接成功');
       resolve();
-    }).connect({
-      host,
-      port,
-      username,
-      password,
-    });
+    }).connect(connectOptions);
 
     conn.on('error', (err) => {
       error(err);
