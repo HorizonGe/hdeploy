@@ -58,6 +58,12 @@ function handleSetConfig(env) {
     },
     {
       type: 'password',
+      name: `${env}PrivateKeyPassphrase`,
+      message: 'SSH 密钥文件密码（密钥无密码则留空）',
+      when: (answers) => answers.deployEnvList.includes(env) && !!answers[`${env}PrivateKeyPath`],
+    },
+    {
+      type: 'password',
       name: `${env}Password`,
       message: '密码',
       when: (answers) => answers.deployEnvList.includes(env) && !answers[`${env}PrivateKeyPath`],

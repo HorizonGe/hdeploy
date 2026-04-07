@@ -28,6 +28,7 @@ const createJsonObj = (userInputInfo) => {
     port: userInputInfo[`${env}Port`],
     username: userInputInfo[`${env}Username`],
     privateKeyPath: userInputInfo[`${env}PrivateKeyPath`] || '',
+    privateKeyPassphrase: userInputInfo[`${env}PrivateKeyPassphrase`] || '',
     password: userInputInfo[`${env}Password`] || '',
     distPath: userInputInfo[`${env}DistPath`],
     webDir: userInputInfo[`${env}WebDir`],

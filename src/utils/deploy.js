@@ -177,10 +177,14 @@ export function connectSSH(conn, config) {
     } = config;
     log(`(SSH 连接 ${host})`);
 
+    const { privateKeyPassphrase } = config;
     const connectOptions = { host, port, username };
     if (privateKeyPath) {
       try {
         connectOptions.privateKey = fs.readFileSync(privateKeyPath);
+        if (privateKeyPassphrase) {
+          connectOptions.passphrase = privateKeyPassphrase;
+        }
       } catch (e) {
         error(`读取密钥文件失败：${e.message}`);
         reject(e);
